@@ -24,10 +24,12 @@ Link Length指两转轴之间的直线距离a，Link Twist指两转轴之间夹�
 Link Offset指连杆偏距d，是两个相邻连杆在公共轴上的距离。Joint angle指连杆之间的转角theta。(对于地杆，记a=0，d=0)
 
 从Axis i-1的轴Zi-1到Axis i的轴Zi，需要变换alpha，a，theta，d四次。^i-1^P = ^i-1^T~R~^R^T~Q~^Q^T~P~^P^T~i~^i^P = ^i^T~i-1~P~i~(Standard)
+![](https://github.com/AllaNewmoon/123/blob/main/standard.png?raw=true)
 
 **DH表示法**：linki后面是jointi，theta变为X~i-1~和X~i~之间的夹角，d变为X~i-1~和X~i~之间的距离，其余同理。^i-1^T~i~ = T~zi-1~T~ZR~T~XQ~T~XP~(Craig)
 
 (Craig方法中^3^T~0~*T~X3~等于standard方法中^3^T~0~)
+![](https://github.com/AllaNewmoon/123/blob/main/craig.png?raw=true)
 
 (**^i-1^T~i~的一般式子：)
 
@@ -49,10 +51,16 @@ Subspace：手臂在定义头尾的T所能达到的变动范围
 代数法：建立方程
 
 （eg：C~θ~ = C~123~, S~θ~ = S~123~, x = l~1~C~1~+l~2~C~12~, y = L~1~S~1~+L~2~S~12~。x的平方加y的平方可解得C~2~，求逆得θ~2~，再带回x，y式子可解得θ~1~，）
+![](https://github.com/AllaNewmoon/123/blob/main/ikproblem.png?raw=true)
 
 2.Pieper's Solution（以六个自由度，前三个joint移动，后三个轴交于一点转动为例）；（移动部分）采用^i-1^T~i~的通式进行递推，最后得到目标x，y，z与θ~1~，θ~2~，θ~3~的函数式的关系。具体如下：
+![](https://github.com/AllaNewmoon/123/blob/main/piepersolution.png?raw=true)
+![](https://github.com/AllaNewmoon/123/blob/main/piepersolution2.png?raw=true)
+![](https://github.com/AllaNewmoon/123/blob/main/piepersolution3.png?raw=true)
 
 （转动部分）θ1，θ2，θ3已知，则有^3^R~6~ = inv(^0^R~3~)*^0^R~6~。可以用Z-Y-Z Euler Angle求解。设DH表示法下有θ4，θ5，θ6，则在euler angle下为θ4^'^ = θ4+pi，θ5^'^ = θ5，θ6^'^ = θ6+pi。
+![](https://github.com/AllaNewmoon/123/blob/main/euler.png?raw=true)
+
 
 ## 轨迹规划
 1.Joint Space下轨迹规划：将^G^T~T~以六个参数（旋转+转动）的形式表达，再将手臂末端点状态转换到joint状态(通过ik，^G^X~T~ -> Θ~i~)，对所有joint规划smmoth trajectories，将joint状态转换到手臂末端状态。
@@ -62,6 +70,8 @@ Subspace：手臂在定义头尾的T所能达到的变动范围
 **轨迹规划方法**：
 
 1.Cubic Polynomials(三次多项式)：不同轨迹区域[ti ti+1]以不同参数的函数来规划，需定义各函数的边界条件(θ(ti), θ(ti+1), θ^'^(ti), θ^'^(ti+1))，有四个条件，得四个方程，用矩阵逆运算求得三次多项式的参数a0, a1, a2, a3。
+![](https://github.com/AllaNewmoon/123/blob/main/cubicpolynomials.png?raw=true)
+![](https://github.com/AllaNewmoon/123/blob/main/cubicpolynomials2.png?raw=true)
 
 2.多段Cubic Polynomials，速度条件：如果θi在ti前后变号，选择θ^'^i = 0，否则选择平均。
 
@@ -73,7 +83,8 @@ Subspace：手臂在定义头尾的T所能达到的变动范围
 
 **Linear Function with Parabolic Blends**：轨迹中包含多个直线段。(在matlab中采用mtraj(@lspb/@tpoly, 起始位姿 终点位姿 时间步)进行三角度姿态插值，用trinterp(T0, T1, 时间步)进行位姿插值)
 
-eg：利用二次曲线连接直线（设出二次式，联立方程，将未知的时间解出来）：
+eg：利用二次曲线连接直线（设出二次式，联立方程，将未知的时间解出来）：![](https://github.com/AllaNewmoon/123/blob/main/blends.png?raw=true)
+![](https://github.com/AllaNewmoon/123/blob/main/blends2.png?raw=true)
 
 对于多段二次线段，可以设定加速度，从而解出时间，也可以设定时间解出加速度。
 
